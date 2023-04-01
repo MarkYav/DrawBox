@@ -29,6 +29,15 @@ val controller = remember { DrawController() }
 DrawBox(drawController = controller, modifier = Modifier.fillMaxSize())
 ```
 
+## Download
+
+Using Gradle Kotlin DSL:
+```kotlin
+repository {
+    implementation("io.github.markyav.drawbox:drawbox:1.0.0")
+}
+```
+
 ## License
 
 Licensed under the Apache License, Version 2.0, [click here for the full license](LICENSE.txt).
