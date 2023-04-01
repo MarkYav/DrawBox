@@ -15,11 +15,13 @@ This is the first multiplatform drawing library!
 
 **Next releases:**
 - Optimizing rendering (convert drawn PATHes)
+- Usage examples
 
 **Planned:**
 - Different image rations
 - Erase tool
 - Filling tool
+- Import/export
 - Migrate from Compose dependencies in DrawController
 
 ## Usage
@@ -33,10 +35,24 @@ DrawBox(drawController = controller, modifier = Modifier.fillMaxSize())
 
 Using Gradle Kotlin DSL:
 ```kotlin
-repository {
-    implementation("io.github.markyav.drawbox:drawbox:1.0.0")
-}
+implementation("io.github.markyav.drawbox:drawbox:1.0.0")
 ```
+
+## Examples
+I will add example of usage for Android and desktop in the next release.
+Also, I will share a link here to another independent project where you can find more sophisticated example!
+
+## Author
+This project was created by [Mark Yavorskyi](https://www.linkedin.com/in/mark-yavorskyi/)
+
+## History
+I love my work.
+The idea of creating this open-source project appeared because I needed a multiplatform (Android + desktop) library for drawing.
+I fround several popular libs for Android but there was **ZERO** for using in KMM/KMP.
+I still have some aspects to improve and I will be happy if you share your feedback or propose an idea!
+
+Hope you enjoy it! \
+Mark
 
 ## License
 
