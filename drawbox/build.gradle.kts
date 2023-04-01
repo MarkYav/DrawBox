@@ -2,13 +2,16 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
     id("com.android.library")
+    id("convention-publication")
 }
 
 group = Library.group
 version = Library.version
 
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release")
+    }
     jvm("desktop") {
         jvmToolchain(11)
     }
