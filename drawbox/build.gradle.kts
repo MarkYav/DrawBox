@@ -4,8 +4,8 @@ plugins {
     id("com.android.library")
 }
 
-group = "io.github.markyav.drawbox"
-version = "1.0-SNAPSHOT"
+group = Library.group
+version = Library.version
 
 kotlin {
     android()
