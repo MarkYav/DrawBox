@@ -18,4 +18,4 @@ pluginManagement {
 rootProject.name = "DrawBox"
 
 include(":drawbox")
-include(":android")
+include(":android", ":desktop")
