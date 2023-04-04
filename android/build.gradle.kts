@@ -4,8 +4,8 @@ plugins {
     kotlin("android")
 }
 
-group = "io.github.markyav.drawbox"
-version = "1.0-SNAPSHOT"
+group = Library.group
+version = Library.version
 
 repositories {
     jcenter()
@@ -20,13 +20,13 @@ dependencies {
 }
 
 android {
-    compileSdkVersion(33)
+    compileSdk = Android.compileSdk
     defaultConfig {
-        applicationId = "io.github.markyav.drawbox.android"
-        minSdkVersion(24)
-        targetSdkVersion(33)
-        versionCode = 1
-        versionName = "1.0-SNAPSHOT"
+        applicationId = Android.applicationId
+        minSdk = Android.minSdk
+        targetSdk = Android.targetSdk
+        versionCode = Android.versionCode
+        versionName = Library.version
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
