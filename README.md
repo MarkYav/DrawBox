@@ -39,7 +39,11 @@ implementation("io.github.markyav.drawbox:drawbox:1.0.0")
 ```
 
 ## Examples
-I will add example of usage for Android and desktop in the next release.
+
+You can find example of the library basic usage in the [sample](sample) package:
+- [Android](sample/android/src/main/java/io/github/markyav/drawbox/android/MainActivity.kt)
+- [Desktop](sample/desktop/src/jvmMain/kotlin/Main.kt)
+
 Also, I will share a link here to another independent project where you can find more sophisticated example!
 
 ## Author
