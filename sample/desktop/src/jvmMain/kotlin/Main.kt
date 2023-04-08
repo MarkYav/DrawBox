@@ -1,13 +1,15 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -23,19 +25,79 @@ fun main() = application {
         val bitmap by controller.getBitmap(250, coroutineSubscription, DrawBoxSubscription.DynamicUpdate).collectAsState()
         val bitmapFinishDrawingUpdate by controller.getBitmap(250, coroutineSubscription, DrawBoxSubscription.FinishDrawingUpdate).collectAsState()
 
-        controller.background = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = 0.15f)
-        controller.canvasOpacity = 0.5f
+        LaunchedEffect(Unit) {
+            controller.background = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = 0.15f)
+            controller.canvasOpacity = 0.5f
+        }
 
         Row {
-            DrawBox(
-                controller = controller,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f)
-                    .padding(100.dp)
-                    .border(width = 1.dp, color = Color.Blue),
-            )
-            Column {
+            Column(modifier = Modifier.weight(2f, false)) {
+                Row {
+                    val enableUndo by remember { derivedStateOf { controller.undoCount > 0 } }
+                    val enableRedo by remember { derivedStateOf { controller.redoCount > 0 } }
+                    IconButton(onClick = controller::undo, enabled = enableUndo) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "undo")
+                    }
+                    IconButton(onClick = controller::redo, enabled = enableRedo) {
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "redo")
+                    }
+                    IconButton(onClick = controller::reset, enabled = enableUndo || enableRedo) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = "reset")
+                    }
+                }
+                Row(modifier = Modifier.padding(end = 8.dp)) {
+                    Column(modifier = Modifier.weight(2f, false)) {
+                        Text("Stroke width")
+                        Slider(
+                            value = controller.strokeWidth,
+                            onValueChange = { controller.strokeWidth = it },
+                            valueRange = 1f..100f
+                        )
+                    }
+                    Column(modifier = Modifier.weight(2f, false)) {
+                        Text("Canvas opacity")
+                        Slider(
+                            value = controller.canvasOpacity,
+                            onValueChange = { controller.canvasOpacity = it },
+                            valueRange = 0f..1f
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(modifier = Modifier.padding(end = 8.dp)) {
+                    Column(modifier = Modifier.weight(2f, true)) {
+                        Text("Color")
+                        Row {
+                            TextButton(onClick = { controller.color = Color.Red }) {
+                                Text("Red")
+                            }
+                            TextButton(onClick = { controller.color = Color.Green }) {
+                                Text("Green")
+                            }
+                            TextButton(onClick = { controller.color = Color.Yellow }) {
+                                Text("Yellow")
+                            }
+                        }
+                    }
+                    Column(modifier = Modifier.weight(2f, false)) {
+                        Text("Background opacity")
+                        Slider(
+                            value = (controller.background as? DrawBoxBackground.ColourBackground)?.alpha ?: 0f,
+                            onValueChange = { controller.background = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = it) },
+                            valueRange = 0f..1f
+                        )
+                    }
+                }
+                DrawBox(
+                    controller = controller,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .aspectRatio(1f)
+                        .padding(100.dp)
+                        .border(width = 1.dp, color = Color.Blue),
+                )
+            }
+            Column(modifier = Modifier.weight(1f, false)) {
                 Text("DynamicUpdate:")
                 Spacer(modifier = Modifier.height(10.dp))
                 Image(
