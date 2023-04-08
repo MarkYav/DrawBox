@@ -5,10 +5,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.ImageBitmapConfig
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -20,8 +19,9 @@ import io.github.markyav.drawbox.controller.DrawController
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         val controller = remember { DrawController() }
-        val bitmap by controller.getBitmapFlow(250, DrawBoxSubscription.DynamicUpdate).collectAsState(ImageBitmap(250, 250, ImageBitmapConfig.Argb8888))
-        val bitmapFinishDrawingUpdate by controller.getBitmapFlow(250, DrawBoxSubscription.FinishDrawingUpdate).collectAsState(ImageBitmap(250, 250, ImageBitmapConfig.Argb8888))
+        val coroutineSubscription = rememberCoroutineScope()
+        val bitmap by controller.getBitmap(250, coroutineSubscription, DrawBoxSubscription.DynamicUpdate).collectAsState()
+        val bitmapFinishDrawingUpdate by controller.getBitmap(250, coroutineSubscription, DrawBoxSubscription.FinishDrawingUpdate).collectAsState()
 
         controller.background = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = 0.15f)
         controller.canvasOpacity = 0.5f
