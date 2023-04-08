@@ -8,8 +8,8 @@ import androidx.compose.ui.unit.IntSize
 import io.github.markyav.drawbox.model.PathWrapper
 import io.github.markyav.drawbox.util.createPath
 import io.github.markyav.drawbox.util.pop
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
 
 /**
  * DrawController interacts with [DrawBox] and it allows you to control the canvas and all the components with it.
@@ -57,6 +57,7 @@ class DrawController {
     fun undo() {
         if (drawnPaths.isNotEmpty()) {
             canceledPaths.add(drawnPaths.pop())
+            finalizePath()
         }
     }
 
@@ -64,6 +65,7 @@ class DrawController {
     fun redo() {
         if (canceledPaths.isNotEmpty()) {
             drawnPaths.add(canceledPaths.pop())
+            finalizePath()
         }
     }
 
@@ -71,6 +73,7 @@ class DrawController {
     fun reset() {
         drawnPaths.clear()
         canceledPaths.clear()
+        completelyDrawnPaths.clear()
     }
 
     /** Call this function when user starts drawing a path. */
@@ -121,7 +124,8 @@ class DrawController {
         }
     }
 
-    fun getBitmapFlow(size: Int, subscription: DrawBoxSubscription): Flow<ImageBitmap> {
+    fun getBitmap(size: Int, coroutineScope: CoroutineScope, subscription: DrawBoxSubscription): StateFlow<ImageBitmap> {
+        val initialBitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
         return flow {
             val bitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
             val canvas = Canvas(bitmap)
@@ -143,6 +147,6 @@ class DrawController {
                 )
             }
             emit(bitmap)
-        }
+        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = initialBitmap)
     }
 }
