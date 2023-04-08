@@ -57,6 +57,7 @@ class DrawController {
     fun undo() {
         if (drawnPaths.isNotEmpty()) {
             canceledPaths.add(drawnPaths.pop())
+            finalizePath()
         }
     }
 
@@ -64,6 +65,7 @@ class DrawController {
     fun redo() {
         if (canceledPaths.isNotEmpty()) {
             drawnPaths.add(canceledPaths.pop())
+            finalizePath()
         }
     }
 
@@ -71,6 +73,7 @@ class DrawController {
     fun reset() {
         drawnPaths.clear()
         canceledPaths.clear()
+        completelyDrawnPaths.clear()
     }
 
     /** Call this function when user starts drawing a path. */
