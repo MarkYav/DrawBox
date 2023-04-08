@@ -24,6 +24,10 @@ This is the first multiplatform drawing library!
 - Optimizing rendering (convert drawn PATHes)
 - Migrate from Compose dependencies in DrawController
 
+## Demo
+
+https://user-images.githubusercontent.com/39382424/230722003-e9b91b28-706a-4048-a950-609f0b357151.mp4
+
 ## Usage
 
 ```kotlin
