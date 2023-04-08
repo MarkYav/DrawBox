@@ -14,13 +14,14 @@ This is the first multiplatform drawing library!
 - Easy Implementations
 
 **Next releases:**
-- Optimizing rendering (convert drawn PATHes)
+- Erase tool
+- Import/export
+
 
 **Planned:**
 - Different image rations
-- Erase tool
 - Filling tool
-- Import/export
+- Optimizing rendering (convert drawn PATHes)
 - Migrate from Compose dependencies in DrawController
 
 ## Usage
