@@ -15,7 +15,6 @@ This is the first multiplatform drawing library!
 
 **Next releases:**
 - Optimizing rendering (convert drawn PATHes)
-- Usage examples
 
 **Planned:**
 - Different image rations
