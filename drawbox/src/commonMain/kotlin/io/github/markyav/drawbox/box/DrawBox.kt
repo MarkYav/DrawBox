@@ -3,28 +3,36 @@ package io.github.markyav.drawbox.box
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import io.github.markyav.drawbox.controller.DrawBoxBackground
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.toSize
+import io.github.markyav.drawbox.controller.DrawBoxSubscription
 import io.github.markyav.drawbox.controller.DrawController
 import io.github.markyav.drawbox.model.PathWrapper
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun DrawBox(
     controller: DrawController,
     modifier: Modifier = Modifier.fillMaxSize(),
 ) {
-    val path: List<PathWrapper>? = controller.pathToDrawOnCanvas
-    val background: DrawBoxBackground = controller.background
-    val canvasAlpha: Float = controller.canvasOpacity
+    val coroutineScope = rememberCoroutineScope()
+    val size = remember { mutableStateOf(1) }
+    //val path: StateFlow<ImageBitmap> = remember { controller.getBitmapForDrawbox(DrawBoxSubscription.DynamicUpdate, coroutineScope) }
+    val path: StateFlow<List<PathWrapper>> = remember { controller.getBitmapForDrawbox(DrawBoxSubscription.DynamicUpdate, coroutineScope) }
 
     Box(modifier = modifier) {
         DrawBoxBackground(
-            background = background,
+            background = controller.background.value,
             modifier = Modifier.fillMaxSize(),
         )
         DrawBoxCanvas(
-            path = path ?: emptyList(),
-            alpha = canvasAlpha,
+            pathListWrapper = path,
+            alpha = controller.canvasOpacity.value,
             onSizeChanged = controller::connectToDrawBox,
             onTap = controller::insertNewPath,
             onDragStart = controller::insertNewPath,

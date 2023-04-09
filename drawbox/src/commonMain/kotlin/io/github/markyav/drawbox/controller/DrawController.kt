@@ -1,13 +1,12 @@
 package io.github.markyav.drawbox.controller
 
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.IntSize
 import io.github.markyav.drawbox.model.PathWrapper
+import io.github.markyav.drawbox.util.addNotNull
 import io.github.markyav.drawbox.util.createPath
-import io.github.markyav.drawbox.util.pop
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
@@ -15,91 +14,110 @@ import kotlinx.coroutines.flow.*
  * DrawController interacts with [DrawBox] and it allows you to control the canvas and all the components with it.
  */
 class DrawController {
-    private var state: DrawBoxConnectionState by mutableStateOf(DrawBoxConnectionState.Disconnected)
+    private var state: MutableStateFlow<DrawBoxConnectionState> = MutableStateFlow(DrawBoxConnectionState.Disconnected)
 
     /** A stateful list of [Path] that is drawn on the [Canvas]. */
-    private val drawnPaths: SnapshotStateList<PathWrapper> = mutableStateListOf()
+    private val drawnPaths: MutableStateFlow<List<PathWrapper>> = MutableStateFlow(emptyList())
 
-    private val completelyDrawnPaths: SnapshotStateList<PathWrapper> = mutableStateListOf()
-
-    /** A stateful list of [Path] that is drawn on the [Canvas] and is scaled for the connected bitmap. */
-    internal val pathToDrawOnCanvas: List<PathWrapper>? by derivedStateOf {
-        (state as? DrawBoxConnectionState.Connected)?.let {
-            drawnPaths.scale(it.size.toFloat())
-        }
-    }
+    private val activeDrawingPath: MutableStateFlow<List<Offset>?> = MutableStateFlow(null)
 
     /** A stateful list of [Path] that was drawn on the [Canvas] but user retracted his action. */
-    private val canceledPaths: SnapshotStateList<PathWrapper> = mutableStateListOf()
+    private val canceledPaths: MutableStateFlow<List<PathWrapper>> = MutableStateFlow(emptyList())
 
     /** An [canvasOpacity] of the [Canvas] in the [DrawBox] */
-    var canvasOpacity: Float by mutableStateOf(1f)
+    var canvasOpacity: MutableStateFlow<Float> = MutableStateFlow(1f)
 
     /** An [opacity] of the stroke */
-    var opacity: Float by mutableStateOf(1f)
+    var opacity: MutableStateFlow<Float> = MutableStateFlow(1f)
 
     /** A [strokeWidth] of the stroke */
-    var strokeWidth: Float by mutableStateOf(10f)
+    var strokeWidth: MutableStateFlow<Float> = MutableStateFlow(10f)
 
     /** A [color] of the stroke */
-    var color: Color by mutableStateOf(Color.Red)
+    var color: MutableStateFlow<Color> = MutableStateFlow(Color.Red)
 
     /** A [background] of the background of DrawBox */
-    var background: DrawBoxBackground by mutableStateOf(DrawBoxBackground.NoBackground)
+    var background: MutableStateFlow<DrawBoxBackground> = MutableStateFlow(DrawBoxBackground.NoBackground)
 
     /** Indicate how many redos it is possible to do. */
-    val undoCount: Int by derivedStateOf { drawnPaths.size }
+    val undoCount = drawnPaths.value.size
 
     /** Indicate how many undos it is possible to do. */
-    val redoCount: Int by derivedStateOf { canceledPaths.size }
+    val redoCount = canceledPaths.value.size
 
     /** Executes undo the drawn path if possible. */
     fun undo() {
-        if (drawnPaths.isNotEmpty()) {
-            canceledPaths.add(drawnPaths.pop())
-            finalizePath()
+        if (drawnPaths.value.isNotEmpty()) {
+            val _drawnPaths = drawnPaths.value.toMutableList()
+            val _canceledPaths = canceledPaths.value.toMutableList()
+
+            _canceledPaths.add(_drawnPaths.removeLast())
+
+            drawnPaths.value = _drawnPaths
+            canceledPaths.value = _canceledPaths
         }
     }
 
     /** Executes redo the drawn path if possible. */
     fun redo() {
-        if (canceledPaths.isNotEmpty()) {
-            drawnPaths.add(canceledPaths.pop())
-            finalizePath()
+        if (canceledPaths.value.isNotEmpty()) {
+            val _drawnPaths = drawnPaths.value.toMutableList()
+            val _canceledPaths = canceledPaths.value.toMutableList()
+
+            _drawnPaths.add(_canceledPaths.removeLast())
+
+            drawnPaths.value = _drawnPaths
+            canceledPaths.value = _canceledPaths
         }
     }
 
     /** Clear drawn paths and the bitmap image. */
     fun reset() {
-        drawnPaths.clear()
-        canceledPaths.clear()
-        completelyDrawnPaths.clear()
+        drawnPaths.value = emptyList()
+        canceledPaths.value = emptyList()
     }
 
     /** Call this function when user starts drawing a path. */
     internal fun updateLatestPath(newPoint: Offset) {
-        (state as? DrawBoxConnectionState.Connected)?.let {
-            drawnPaths.last().points.add(newPoint.div(it.size.toFloat()))
+        (state.value as? DrawBoxConnectionState.Connected)?.let {
+            require(activeDrawingPath.value != null)
+            val list = activeDrawingPath.value!!.toMutableList()
+            list.add(newPoint.div(it.size.toFloat()))
+            activeDrawingPath.value = list
         }
     }
 
     /** When dragging call this function to update the last path. */
     internal fun insertNewPath(newPoint: Offset) {
-        (state as? DrawBoxConnectionState.Connected)?.let {
-            val pathWrapper = PathWrapper(
+        (state.value as? DrawBoxConnectionState.Connected)?.let {
+            require(activeDrawingPath.value == null)
+            /*val pathWrapper = PathWrapper(
                 points = mutableStateListOf(newPoint.div(it.size.toFloat())),
-                strokeColor = color,
-                alpha = opacity,
-                strokeWidth = strokeWidth.div(it.size.toFloat()),
-            )
-            drawnPaths.add(pathWrapper)
-            canceledPaths.clear()
+                strokeColor = color.value,
+                alpha = opacity.value,
+                strokeWidth = strokeWidth.value.div(it.size.toFloat()),
+            )*/
+            activeDrawingPath.value = listOf(newPoint.div(it.size.toFloat()))
+            canceledPaths.value = emptyList()
         }
     }
 
     internal fun finalizePath() {
-        completelyDrawnPaths.clear()
-        completelyDrawnPaths.addAll(drawnPaths)
+        (state.value as? DrawBoxConnectionState.Connected)?.let {
+            require(activeDrawingPath.value != null)
+            val _drawnPaths = drawnPaths.value.toMutableList()
+
+            val pathWrapper = PathWrapper(
+                points = activeDrawingPath.value!!,
+                strokeColor = color.value,
+                alpha = opacity.value,
+                strokeWidth = strokeWidth.value.div(it.size.toFloat()),
+            )
+            _drawnPaths.add(pathWrapper)
+
+            drawnPaths.value = _drawnPaths
+            activeDrawingPath.value = null
+        }
     }
 
     /** Call this function to connect to the [DrawBox]. */
@@ -107,33 +125,70 @@ class DrawController {
         if (
             size.width > 0 &&
             size.height > 0 &&
-            size.width == size.height //&&
-        //state is DrawBoxConnectionState.Disconnected
+            size.width == size.height
         ) {
-            state = DrawBoxConnectionState.Connected(size = size.width)
+            state.value = DrawBoxConnectionState.Connected(size = size.width)
         }
+    }
+
+    internal fun onTap(newPoint: Offset) {
+        insertNewPath(newPoint)
+        finalizePath()
     }
 
     private fun List<PathWrapper>.scale(size: Float): List<PathWrapper> {
         return this.map { pw ->
             val t = pw.points.map { it.times(size) }
             pw.copy(
-                points = SnapshotStateList<Offset>().also { it.addAll(t) },
+                points = mutableListOf<Offset>().also { it.addAll(t) },
                 strokeWidth = pw.strokeWidth * size
             )
         }
     }
 
-    fun getBitmap(size: Int, coroutineScope: CoroutineScope, subscription: DrawBoxSubscription): StateFlow<ImageBitmap> {
+    fun getDrawPath(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
+        return when (subscription) {
+            is DrawBoxSubscription.DynamicUpdate -> getDynamicUpdateDrawnPath(coroutineScope)
+            is DrawBoxSubscription.FinishDrawingUpdate -> drawnPaths
+        }
+    }
+
+    private fun getDynamicUpdateDrawnPath(coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
+        return combine(drawnPaths, activeDrawingPath) { a, b ->
+            val _a = a.toMutableList()
+            (state.value as? DrawBoxConnectionState.Connected)?.let {
+                val pathWrapper = PathWrapper(
+                    points = activeDrawingPath.value ?: emptyList(),
+                    strokeColor = color.value,
+                    alpha = opacity.value,
+                    strokeWidth = strokeWidth.value.div(it.size.toFloat()),
+                )
+                _a.addNotNull(pathWrapper)
+            }
+            _a
+        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = drawnPaths.value)
+    }
+
+    fun getBitmapForDrawbox(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
+        return combine(getDrawPath(subscription, coroutineScope), state) { paths, st ->
+            val size = (st as? DrawBoxConnectionState.Connected)?.let { it.size } ?: 1
+            paths.scale(size.toFloat())
+        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = drawnPaths.value)
+    }
+
+    fun getBitmap(size: Int, subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<ImageBitmap> {
+        //println("getBitmap function called!")
+
         val initialBitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
-        return flow {
+        val path = getDrawPath(subscription, coroutineScope)
+
+
+        return path.map {
             val bitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
             val canvas = Canvas(bitmap)
-            val path = when (subscription) {
-                is DrawBoxSubscription.DynamicUpdate -> drawnPaths
-                is DrawBoxSubscription.FinishDrawingUpdate -> completelyDrawnPaths
-            }
-            path.scale(size.toFloat()).forEach { pw ->
+            //println(it.size)
+
+            it.scale(size.toFloat()).forEach { pw ->
                 canvas.drawPath(
                     createPath(pw.points),
                     paint = Paint().apply {
@@ -146,7 +201,7 @@ class DrawController {
                     }
                 )
             }
-            emit(bitmap)
+            bitmap
         }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = initialBitmap)
     }
 }
