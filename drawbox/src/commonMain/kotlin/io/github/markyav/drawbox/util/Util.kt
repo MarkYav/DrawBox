@@ -27,3 +27,10 @@ fun createPath(points: List<Offset>): Path {
 
 private fun calculateMidpoint(start: Offset, end: Offset) =
     Offset((start.x + end.x) / 2, (start.y + end.y) / 2)
+
+fun <E> MutableList<E>.addNotNull(element: E?): Boolean {
+    return if (element == null)
+        false
+    else
+        this.add(element)
+}
