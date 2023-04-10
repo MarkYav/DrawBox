@@ -22,7 +22,7 @@ This is the first multiplatform drawing library!
 - Different image rations
 - Filling tool
 - Optimizing rendering (convert drawn PATHes)
-- Migrate from Compose dependencies in DrawController
+- Migrate from Compose dependencies in [controller folder](drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/controller)
 
 ## Demo
 
