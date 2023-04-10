@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import io.github.markyav.drawbox.android.drawing.DrawingScreen
-import io.github.markyav.drawbox.android.drawing.item.getSketchDrawingClassList
-import io.github.markyav.drawbox.android.drawing.item.toDrawingColorList
 
 @Composable
 fun MainScreen() {
@@ -27,7 +25,7 @@ fun MainScreen() {
 
     Row {
         Column(modifier = Modifier.weight(2f, true)) {
-            DrawingScreen(drawingColors = getSketchDrawingClassList().toDrawingColorList(), bitmapCallback = bitmapCallback)
+            DrawingScreen(bitmapCallback = bitmapCallback)
         }
         Column(modifier = Modifier.weight(1f, true)) {
             Image(

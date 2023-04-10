@@ -21,12 +21,13 @@ import io.github.markyav.drawbox.controller.DrawController
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         val controller = remember { DrawController() }
-        val coroutineSubscription = rememberCoroutineScope()
-        val bitmap by remember { controller.getBitmap(250, DrawBoxSubscription.DynamicUpdate, coroutineSubscription) }.collectAsState()
-        val bitmapFinishDrawingUpdate by remember { controller.getBitmap(250, DrawBoxSubscription.FinishDrawingUpdate, coroutineSubscription) }.collectAsState()
+        val bitmap by remember { controller.getBitmap(250, DrawBoxSubscription.DynamicUpdate) }.collectAsState()
+        val bitmapFinishDrawingUpdate by remember { controller.getBitmap(250, DrawBoxSubscription.FinishDrawingUpdate) }.collectAsState()
 
-        val enableUndo by remember { derivedStateOf { controller.undoCount > 0 } }
-        val enableRedo by remember { derivedStateOf { controller.redoCount > 0 } }
+        val undoCount by controller.undoCount.collectAsState()
+        val redoCount by controller.redoCount.collectAsState()
+        val enableUndo by remember { derivedStateOf { undoCount > 0 } }
+        val enableRedo by remember { derivedStateOf { redoCount > 0 } }
 
         val strokeWith by controller.strokeWidth.collectAsState()
         val canvasOpacity by controller.canvasOpacity.collectAsState()

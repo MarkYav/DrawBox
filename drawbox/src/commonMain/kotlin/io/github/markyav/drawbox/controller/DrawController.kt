@@ -6,9 +6,15 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.unit.IntSize
 import io.github.markyav.drawbox.model.PathWrapper
 import io.github.markyav.drawbox.util.addNotNull
+import io.github.markyav.drawbox.util.combineStates
 import io.github.markyav.drawbox.util.createPath
+import io.github.markyav.drawbox.util.mapState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlin.reflect.KProperty
 
 /**
  * DrawController interacts with [DrawBox] and it allows you to control the canvas and all the components with it.
@@ -40,10 +46,10 @@ class DrawController {
     var background: MutableStateFlow<DrawBoxBackground> = MutableStateFlow(DrawBoxBackground.NoBackground)
 
     /** Indicate how many redos it is possible to do. */
-    val undoCount = drawnPaths.value.size
+    val undoCount = drawnPaths.mapState { it.size }
 
     /** Indicate how many undos it is possible to do. */
-    val redoCount = canceledPaths.value.size
+    val redoCount = canceledPaths.mapState { it.size }
 
     /** Executes undo the drawn path if possible. */
     fun undo() {
@@ -146,15 +152,15 @@ class DrawController {
         }
     }
 
-    fun getDrawPath(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
+    fun getDrawPath(subscription: DrawBoxSubscription): StateFlow<List<PathWrapper>> {
         return when (subscription) {
-            is DrawBoxSubscription.DynamicUpdate -> getDynamicUpdateDrawnPath(coroutineScope)
+            is DrawBoxSubscription.DynamicUpdate -> getDynamicUpdateDrawnPath()
             is DrawBoxSubscription.FinishDrawingUpdate -> drawnPaths
         }
     }
 
-    private fun getDynamicUpdateDrawnPath(coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
-        return combine(drawnPaths, activeDrawingPath) { a, b ->
+    private fun getDynamicUpdateDrawnPath(): StateFlow<List<PathWrapper>> {
+        return combineStates(drawnPaths, activeDrawingPath) { a, b ->
             val _a = a.toMutableList()
             (state.value as? DrawBoxConnectionState.Connected)?.let {
                 val pathWrapper = PathWrapper(
@@ -166,20 +172,20 @@ class DrawController {
                 _a.addNotNull(pathWrapper)
             }
             _a
-        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = drawnPaths.value)
+        }
     }
 
-    internal fun getPathWrappersForDrawbox(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
-        return combine(getDrawPath(subscription, coroutineScope), state) { paths, st ->
-            val size = (st as? DrawBoxConnectionState.Connected)?.let { it.size } ?: 1
+    internal fun getPathWrappersForDrawbox(subscription: DrawBoxSubscription): StateFlow<List<PathWrapper>> {
+        return combineStates(getDrawPath(subscription), state) { paths, st ->
+            val size = (st as? DrawBoxConnectionState.Connected)?.size ?: 1
             paths.scale(size.toFloat())
-        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = drawnPaths.value)
+        }
     }
 
-    fun getBitmap(size: Int, subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<ImageBitmap> {
+    fun getBitmap(size: Int, subscription: DrawBoxSubscription): StateFlow<ImageBitmap> {
         val initialBitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
-        val path = getDrawPath(subscription, coroutineScope)
-        return path.map {
+        val path = getDrawPath(subscription)
+        return path.mapState {
             val bitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
             val canvas = Canvas(bitmap)
             it.scale(size.toFloat()).forEach { pw ->
@@ -196,6 +202,6 @@ class DrawController {
                 )
             }
             bitmap
-        }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = initialBitmap)
+        }
     }
 }

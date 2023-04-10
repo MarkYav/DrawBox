@@ -14,18 +14,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.github.markyav.drawbox.android.drawing.item.DrawingColor
 import io.github.markyav.drawbox.box.DrawBox
 import io.github.markyav.drawbox.controller.DrawBoxSubscription
 import io.github.markyav.drawbox.controller.DrawController
 
 @Composable
 internal fun ExpandedDrawingScreen(
-    drawingColors: List<DrawingColor>,
     drawController: DrawController,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val bitmap by remember { drawController.getBitmap(500, DrawBoxSubscription.FinishDrawingUpdate, coroutineScope) }.collectAsState()
+    val bitmap by remember { drawController.getBitmap(500, DrawBoxSubscription.FinishDrawingUpdate) }.collectAsState()
 
     Row {
         Image(bitmap = bitmap, modifier = Modifier
@@ -43,8 +40,8 @@ internal fun ExpandedDrawingScreen(
                     .weight(1f, fill = false),
             )
             Row {
-                val enableUndo by remember { derivedStateOf { drawController.undoCount > 0 } }
-                val enableRedo by remember { derivedStateOf { drawController.redoCount > 0 } }
+                val enableUndo by remember { derivedStateOf { drawController.undoCount.value > 0 } }
+                val enableRedo by remember { derivedStateOf { drawController.redoCount.value > 0 } }
                 IconButton(onClick = drawController::undo, enabled = enableUndo) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "undo")
                 }

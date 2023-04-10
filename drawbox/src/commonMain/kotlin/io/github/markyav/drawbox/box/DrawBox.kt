@@ -17,9 +17,8 @@ fun DrawBox(
     controller: DrawController,
     modifier: Modifier = Modifier.fillMaxSize(),
 ) {
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val path: StateFlow<List<PathWrapper>> = remember {
-        controller.getPathWrappersForDrawbox(DrawBoxSubscription.DynamicUpdate, coroutineScope)
+        controller.getPathWrappersForDrawbox(DrawBoxSubscription.DynamicUpdate)
     }
 
     Box(modifier = modifier) {
