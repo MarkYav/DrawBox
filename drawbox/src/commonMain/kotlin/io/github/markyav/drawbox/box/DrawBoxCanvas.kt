@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -46,7 +45,6 @@ fun DrawBoxCanvas(
         .clipToBounds()
         .alpha(alpha)
     ) {
-        //drawImage(path)
         path.forEach { pw ->
             drawPath(
                 createPath(pw.points),

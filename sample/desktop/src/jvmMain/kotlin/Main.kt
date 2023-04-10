@@ -25,6 +25,13 @@ fun main() = application {
         val bitmap by remember { controller.getBitmap(250, DrawBoxSubscription.DynamicUpdate, coroutineSubscription) }.collectAsState()
         val bitmapFinishDrawingUpdate by remember { controller.getBitmap(250, DrawBoxSubscription.FinishDrawingUpdate, coroutineSubscription) }.collectAsState()
 
+        val enableUndo by remember { derivedStateOf { controller.undoCount > 0 } }
+        val enableRedo by remember { derivedStateOf { controller.redoCount > 0 } }
+
+        val strokeWith by controller.strokeWidth.collectAsState()
+        val canvasOpacity by controller.canvasOpacity.collectAsState()
+        val background by controller.background.collectAsState()
+
         LaunchedEffect(Unit) {
             controller.background.value = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = 0.15f)
             controller.canvasOpacity.value = 0.5f
@@ -33,8 +40,6 @@ fun main() = application {
         Row {
             Column(modifier = Modifier.weight(2f, false)) {
                 Row {
-                    val enableUndo by remember { derivedStateOf { controller.undoCount > 0 } }
-                    val enableRedo by remember { derivedStateOf { controller.redoCount > 0 } }
                     IconButton(onClick = controller::undo, enabled = enableUndo) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "undo")
                     }
@@ -49,7 +54,7 @@ fun main() = application {
                     Column(modifier = Modifier.weight(2f, false)) {
                         Text("Stroke width")
                         Slider(
-                            value = controller.strokeWidth.value,
+                            value = strokeWith,
                             onValueChange = { controller.strokeWidth.value = it },
                             valueRange = 1f..100f
                         )
@@ -57,7 +62,7 @@ fun main() = application {
                     Column(modifier = Modifier.weight(2f, false)) {
                         Text("Canvas opacity")
                         Slider(
-                            value = controller.canvasOpacity.value,
+                            value = canvasOpacity,
                             onValueChange = { controller.canvasOpacity.value = it },
                             valueRange = 0f..1f
                         )
@@ -82,7 +87,7 @@ fun main() = application {
                     Column(modifier = Modifier.weight(2f, false)) {
                         Text("Background opacity")
                         Slider(
-                            value = (controller.background as? DrawBoxBackground.ColourBackground)?.alpha ?: 0f,
+                            value = (background as? DrawBoxBackground.ColourBackground)?.alpha ?: 0f,
                             onValueChange = { controller.background.value = DrawBoxBackground.ColourBackground(color = Color.Blue, alpha = it) },
                             valueRange = 0f..1f
                         )

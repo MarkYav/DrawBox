@@ -169,7 +169,7 @@ class DrawController {
         }.stateIn(coroutineScope, started = SharingStarted.Eagerly, initialValue = drawnPaths.value)
     }
 
-    fun getBitmapForDrawbox(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
+    internal fun getPathWrappersForDrawbox(subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<List<PathWrapper>> {
         return combine(getDrawPath(subscription, coroutineScope), state) { paths, st ->
             val size = (st as? DrawBoxConnectionState.Connected)?.let { it.size } ?: 1
             paths.scale(size.toFloat())
@@ -177,17 +177,11 @@ class DrawController {
     }
 
     fun getBitmap(size: Int, subscription: DrawBoxSubscription, coroutineScope: CoroutineScope): StateFlow<ImageBitmap> {
-        //println("getBitmap function called!")
-
         val initialBitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
         val path = getDrawPath(subscription, coroutineScope)
-
-
         return path.map {
             val bitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
             val canvas = Canvas(bitmap)
-            //println(it.size)
-
             it.scale(size.toFloat()).forEach { pw ->
                 canvas.drawPath(
                     createPath(pw.points),
