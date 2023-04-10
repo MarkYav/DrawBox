@@ -39,7 +39,7 @@ DrawBox(drawController = controller, modifier = Modifier.fillMaxSize())
 
 Using Gradle Kotlin DSL:
 ```kotlin
-implementation("io.github.markyav.drawbox:drawbox:1.0.0")
+implementation("io.github.markyav.drawbox:drawbox:1.2.0")
 ```
 
 ## Examples
