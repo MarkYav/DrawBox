@@ -2,9 +2,7 @@ package io.github.markyav.drawbox.box
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import io.github.markyav.drawbox.controller.DrawBoxSubscription
 import io.github.markyav.drawbox.controller.DrawController
@@ -20,15 +18,17 @@ fun DrawBox(
     val path: StateFlow<List<PathWrapper>> = remember {
         controller.getPathWrappersForDrawbox(DrawBoxSubscription.DynamicUpdate)
     }
+    val background by controller.background.collectAsState()
+    val canvasOpacity by controller.canvasOpacity.collectAsState()
 
     Box(modifier = modifier) {
         DrawBoxBackground(
-            background = controller.background.value,
+            background = background,
             modifier = Modifier.fillMaxSize(),
         )
         DrawBoxCanvas(
             pathListWrapper = path,
-            alpha = controller.canvasOpacity.value,
+            alpha = canvasOpacity,
             onSizeChanged = controller::connectToDrawBox,
             onTap = controller::onTap,
             onDragStart = controller::insertNewPath,
