@@ -16,6 +16,7 @@ This is the first multiplatform drawing library!
 **Next releases:**
 - Erase tool
 - Import/export
+- Background content scale
 
 
 **Planned:**

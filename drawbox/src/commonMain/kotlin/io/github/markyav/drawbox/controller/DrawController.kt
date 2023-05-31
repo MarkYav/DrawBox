@@ -9,12 +9,7 @@ import io.github.markyav.drawbox.util.addNotNull
 import io.github.markyav.drawbox.util.combineStates
 import io.github.markyav.drawbox.util.createPath
 import io.github.markyav.drawbox.util.mapState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlin.reflect.KProperty
 
 /**
  * DrawController interacts with [DrawBox] and it allows you to control the canvas and all the components with it.
@@ -29,6 +24,8 @@ class DrawController {
 
     /** A stateful list of [Path] that was drawn on the [Canvas] but user retracted his action. */
     private val canceledPaths: MutableStateFlow<List<PathWrapper>> = MutableStateFlow(emptyList())
+
+    val openedImage: MutableStateFlow<ImageBitmap?> = MutableStateFlow(null)
 
     /** An [canvasOpacity] of the [Canvas] in the [DrawBox] */
     var canvasOpacity: MutableStateFlow<Float> = MutableStateFlow(1f)
@@ -81,6 +78,11 @@ class DrawController {
     fun reset() {
         drawnPaths.value = emptyList()
         canceledPaths.value = emptyList()
+    }
+
+    fun open(image: ImageBitmap) {
+        reset()
+        openedImage.value = image
     }
 
     /** Call this function when user starts drawing a path. */
@@ -182,13 +184,37 @@ class DrawController {
         }
     }
 
+    internal fun getOpenImageForDrawbox(size: Int?): StateFlow<OpenedImage> {
+        return combineStates(openedImage, state) { image, st ->
+            if (image !=  null) {
+                OpenedImage.Image(
+                    image,
+                    dstSize = IntSize(
+                        width = size ?: (st as? DrawBoxConnectionState.Connected)?.size ?: 1,
+                        height = size ?: (st as? DrawBoxConnectionState.Connected)?.size ?: 1,
+                    ),
+                )
+            } else {
+                OpenedImage.None
+            }
+        }
+    }
+
     fun getBitmap(size: Int, subscription: DrawBoxSubscription): StateFlow<ImageBitmap> {
-        val initialBitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
         val path = getDrawPath(subscription)
-        return path.mapState {
+        return combineStates(getOpenImageForDrawbox(size), path) { openImage, p ->
             val bitmap = ImageBitmap(size, size, ImageBitmapConfig.Argb8888)
             val canvas = Canvas(bitmap)
-            it.scale(size.toFloat()).forEach { pw ->
+            (openImage as? OpenedImage.Image)?.let {
+                canvas.drawImageRect(
+                    image = it.image,
+                    srcOffset = it.srcOffset,
+                    srcSize = it.srcSize,
+                    dstSize = it.dstSize,
+                    paint = Paint()
+                )
+            }
+            p.scale(size.toFloat()).forEach { pw ->
                 canvas.drawPath(
                     createPath(pw.points),
                     paint = Paint().apply {

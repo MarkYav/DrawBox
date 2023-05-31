@@ -27,12 +27,12 @@ fun MainScreen() {
         Column(modifier = Modifier.weight(2f, true)) {
             DrawingScreen(bitmapCallback = bitmapCallback)
         }
-        Column(modifier = Modifier.weight(1f, true)) {
+        /*Column(modifier = Modifier.weight(1f, true)) {
             Image(
                 bitmap = bitmap.value,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize().padding(8.dp).border(1.dp, Color.Blue),
             )
-        }
+        }*/
     }
 }

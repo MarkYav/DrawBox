@@ -3,10 +3,7 @@ package io.github.markyav.drawbox.box
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
@@ -18,6 +15,7 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
+import io.github.markyav.drawbox.controller.OpenedImage
 import io.github.markyav.drawbox.model.PathWrapper
 import io.github.markyav.drawbox.util.createPath
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun DrawBoxCanvas(
     pathListWrapper: StateFlow<List<PathWrapper>>,
+    openedImage: StateFlow<OpenedImage>,
     alpha: Float,
     onSizeChanged: (IntSize) -> Unit,
     onTap: (Offset) -> Unit,
@@ -37,6 +36,7 @@ fun DrawBoxCanvas(
         { change, _ -> onDrag(change.position) }
     }
     val path by pathListWrapper.collectAsState()
+    val image by openedImage.collectAsState()
 
     Canvas(modifier = modifier
         .onSizeChanged(onSizeChanged)
@@ -45,6 +45,15 @@ fun DrawBoxCanvas(
         .clipToBounds()
         .alpha(alpha)
     ) {
+        (image as? OpenedImage.Image)?.let {
+            drawImage(
+                image = it.image,
+                srcOffset = it.srcOffset,
+                srcSize = it.srcSize,
+                dstSize = it.dstSize,
+            )
+        }
+
         path.forEach { pw ->
             drawPath(
                 createPath(pw.points),
