@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.res.painterResource
 import io.github.markyav.drawbox.controller.DrawBoxBackground
 import io.github.markyav.drawbox.controller.DrawBoxSubscription
 import io.github.markyav.drawbox.controller.DrawController
