@@ -24,9 +24,9 @@ internal fun ExpandedDrawingScreen(
 ) {
     val bitmap by remember { drawController.getBitmap(500, DrawBoxSubscription.FinishDrawingUpdate) }.collectAsState()
 
-    Row {
+    Column {
         Image(bitmap = bitmap, modifier = Modifier
-            .size(50.dp)
+            .size(250.dp)
             .border(1.dp, Color.Red), contentDescription = null)
 
         Column(modifier = Modifier.weight(4.5f, false)) {

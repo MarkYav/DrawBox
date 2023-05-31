@@ -16,6 +16,7 @@ This is the first multiplatform drawing library!
 **Next releases:**
 - Erase tool
 - Import/export
+- Background content scale
 
 
 **Planned:**
@@ -39,7 +40,7 @@ DrawBox(drawController = controller, modifier = Modifier.fillMaxSize())
 
 Using Gradle Kotlin DSL:
 ```kotlin
-implementation("io.github.markyav.drawbox:drawbox:1.2.0")
+implementation("io.github.markyav.drawbox:drawbox:1.3.0")
 ```
 
 ## Examples
