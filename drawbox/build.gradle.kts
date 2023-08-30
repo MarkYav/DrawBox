@@ -33,7 +33,6 @@ android {
     namespace = "io.github.markyav.drawbox"
     defaultConfig {
         minSdk = Android.minSdk
-        targetSdk = Android.targetSdk
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
