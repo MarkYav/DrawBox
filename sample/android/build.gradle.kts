@@ -21,6 +21,7 @@ dependencies {
 
 android {
     compileSdk = Android.compileSdk
+    namespace = "io.github.markyav.drawbox.android"
     defaultConfig {
         applicationId = Android.applicationId
         minSdk = Android.minSdk

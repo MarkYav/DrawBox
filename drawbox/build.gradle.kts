@@ -33,6 +33,7 @@ kotlin {
 android {
     compileSdk = Android.compileSdk
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    namespace = "io.github.markyav.drawbox"
     defaultConfig {
         minSdk = Android.minSdk
         targetSdk = Android.targetSdk
