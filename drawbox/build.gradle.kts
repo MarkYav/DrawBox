@@ -22,11 +22,8 @@ kotlin {
                 api(compose.foundation)
             }
         }
-        val commonTest by getting
         val androidMain by getting
-        val androidTest by getting
         val desktopMain by getting
-        val desktopTest by getting
     }
 }
 
