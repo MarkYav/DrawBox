@@ -1,7 +1,7 @@
 object Android {
-    val compileSdk = 33
+    val compileSdk = 34
     val minSdk = 24
-    val targetSdk = 33
+    val targetSdk = 34
     val versionCode = Library.version
         .split(".")
         .map { it.toInt() }
