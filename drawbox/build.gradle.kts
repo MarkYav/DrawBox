@@ -9,7 +9,12 @@ group = Library.group
 version = Library.version
 
 kotlin {
-    android {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
         publishLibraryVariants("release")
     }
     jvm("desktop") {
@@ -22,11 +27,8 @@ kotlin {
                 api(compose.foundation)
             }
         }
-        val commonTest by getting
         val androidMain by getting
-        val androidTest by getting
         val desktopMain by getting
-        val desktopTest by getting
     }
 }
 
