@@ -9,13 +9,13 @@ version = Library.version
 
 android {
     namespace = "io.github.markyav.drawbox.android"
-    compileSdk = Android.compileSdk
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        applicationId = Android.applicationId
-        minSdk = Android.minSdk
-        targetSdk = Android.targetSdk
-        versionCode = Android.versionCode
-        versionName = Library.version
+        applicationId = "io.github.markyav.sample"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = "1.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

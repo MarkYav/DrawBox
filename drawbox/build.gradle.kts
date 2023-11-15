@@ -30,9 +30,9 @@ kotlin {
 
 android {
     namespace = "io.github.markyav.drawbox"
-    compileSdk = Android.compileSdk
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = Android.minSdk
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
