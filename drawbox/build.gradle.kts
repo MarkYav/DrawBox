@@ -21,14 +21,10 @@ kotlin {
         jvmToolchain(11)
     }
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(compose.runtime)
-                api(compose.foundation)
-            }
+        commonMain.dependencies {
+            api(compose.runtime)
+            api(compose.foundation)
         }
-        val androidMain by getting
-        val desktopMain by getting
     }
 }
 
@@ -37,5 +33,9 @@ android {
     compileSdk = Android.compileSdk
     defaultConfig {
         minSdk = Android.minSdk
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
