@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform")
-    id("org.jetbrains.compose")
-    id("com.android.library")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.androidLibrary)
     id("convention-publication")
 }
 
@@ -9,33 +9,30 @@ group = Library.group
 version = Library.version
 
 kotlin {
-    android {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
         publishLibraryVariants("release")
     }
     jvm("desktop") {
         jvmToolchain(11)
     }
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(compose.runtime)
-                api(compose.foundation)
-            }
+        commonMain.dependencies {
+            api(compose.runtime)
+            api(compose.foundation)
         }
-        val commonTest by getting
-        val androidMain by getting
-        val androidTest by getting
-        val desktopMain by getting
-        val desktopTest by getting
     }
 }
 
 android {
-    compileSdk = Android.compileSdk
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    namespace = "io.github.markyav.drawbox"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = Android.minSdk
-        targetSdk = Android.targetSdk
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -1,32 +1,21 @@
 plugins {
-    id("org.jetbrains.compose")
-    id("com.android.application")
-    kotlin("android")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
 }
 
 group = Library.group
 version = Library.version
 
-repositories {
-    jcenter()
-}
-
-dependencies {
-    implementation(project(":drawbox"))
-    implementation("androidx.activity:activity-compose:1.5.0")
-    implementation(compose.material)
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("androidx.core:core-ktx:1.9.0")
-}
-
 android {
-    compileSdk = Android.compileSdk
+    namespace = "io.github.markyav.drawbox.android"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        applicationId = Android.applicationId
-        minSdk = Android.minSdk
-        targetSdk = Android.targetSdk
-        versionCode = Android.versionCode
-        versionName = Library.version
+        applicationId = "io.github.markyav.sample"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = "1.0"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -37,4 +26,15 @@ android {
             isMinifyEnabled = false
         }
     }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    implementation(project(":drawbox"))
+    implementation(libs.androidx.activityCompose)
+    implementation(compose.material)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.coreKtx)
 }
