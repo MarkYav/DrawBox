@@ -5,7 +5,7 @@ object Library {
 
     val group = "io.github.markyav.drawbox"
     val artifact = "drawbox"
-    val version = "1.3.1"
+    val version = "2.0.0"
 
     object License {
         val name = "Apache-2.0"

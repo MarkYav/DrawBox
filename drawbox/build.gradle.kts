@@ -1,41 +1,72 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.compose)
-    alias(libs.plugins.androidLibrary)
-    id("convention-publication")
+    alias(libs.plugins.androidKmpLibrary)
+    alias(libs.plugins.mavenPublish)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.buildConfig)
 }
 
 group = Library.group
 version = Library.version
 
 kotlin {
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-        }
-        publishLibraryVariants("release")
+    android {
+        namespace = "io.github.markyav.drawbox"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources.enable = true
+        compilerOptions { jvmTarget = JvmTarget.JVM_17 }
     }
-    jvm("desktop") {
-        jvmToolchain(11)
+
+    jvm {
+        compilerOptions { jvmTarget = JvmTarget.JVM_17 }
     }
+
     sourceSets {
         commonMain.dependencies {
-            api(compose.runtime)
-            api(compose.foundation)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
         }
     }
 }
 
-android {
-    namespace = "io.github.markyav.drawbox"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+//Publishing your Kotlin Multiplatform library to Maven Central
+//https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html
+mavenPublishing {
+    publishToMavenCentral()
+    coordinates(Library.group, Library.artifact, Library.version)
+
+    pom {
+        name = Library.name
+        description = Library.description
+        url = Library.url
+
+        licenses {
+            license {
+                name = Library.License.name
+                url = Library.License.url
+            }
+        }
+
+        developers {
+            developer {
+                id = Library.Author.id
+                name = Library.Author.name
+                email = Library.Author.email
+            }
+        }
+
+        scm {
+            url = Library.url
+        }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
+    if (project.hasProperty("signing.keyId")) signAllPublications()
+}
+
+buildConfig {
+    // BuildConfig configuration here.
+    // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
 }
