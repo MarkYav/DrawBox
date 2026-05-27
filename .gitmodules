@@ -1,0 +1,3 @@
+[submodule ".claude/skills/dev-flow"]
+	path = .claude/skills/dev-flow
+	url = https://github.com/yavfast/dev-flow.git

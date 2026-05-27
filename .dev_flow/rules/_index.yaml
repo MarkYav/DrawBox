@@ -1,0 +1,11 @@
+rules:
+  - file: naming.md
+    summary: Naming conventions for classes, functions, variables, and packages
+  - file: structure.md
+    summary: Code structure and organization within files and packages
+  - file: architecture.md
+    summary: Architectural constraints — layer boundaries, dependency direction, KMP targets
+  - file: error-handling.md
+    summary: Error handling patterns and validation conventions
+  - file: style.md
+    summary: Code style, Kotlin idioms, and Compose-specific conventions

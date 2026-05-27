@@ -1,0 +1,21 @@
+domains:
+  - name: kmp-compose
+    description: Kotlin Multiplatform Compose — project-specific patterns and constraints
+    topics: [compose-multiplatform, kmp, android, desktop, stateflow]
+    skills: []
+
+  - name: publishing
+    description: Maven Central publishing via vanniktech maven-publish plugin
+    topics: [maven-central, vanniktech, signing, pom, gradle]
+    skills: []
+
+  - name: drawing
+    description: Canvas drawing, bezier path math, and normalization patterns
+    topics: [canvas, path, bezier, normalization, gestures]
+    skills:
+      - name: normalized-coordinate-system
+        description: >
+          All stroke data is stored in [0..1] space and scaled to pixel space on render.
+          Normalization: point.div(canvasSize). Denormalization: point.times(canvasSize).
+          Applies to both points and strokeWidth in PathWrapper.
+          See: DrawController.kt:93, :119, :147.

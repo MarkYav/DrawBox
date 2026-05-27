@@ -1,0 +1,27 @@
+layers:
+  - layer: 0
+    modules:
+      - name: util
+        path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/util
+        status: docs_generated
+        analyzed_at: 2026-05-27
+        docs_at: 2026-05-27
+      - name: model
+        path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/model
+        status: docs_generated
+        analyzed_at: 2026-05-27
+        docs_at: 2026-05-27
+  - layer: 1
+    modules:
+      - name: controller
+        path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/controller
+        status: docs_generated
+        analyzed_at: 2026-05-27
+        docs_at: 2026-05-27
+  - layer: 2
+    modules:
+      - name: box
+        path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/box
+        status: docs_generated
+        analyzed_at: 2026-05-27
+        docs_at: 2026-05-27

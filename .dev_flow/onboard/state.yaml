@@ -1,0 +1,23 @@
+status: completed
+started: 2026-05-27
+updated: 2026-05-27
+current_step: completed
+workspace_type: gradle
+total_modules: 4
+modules_analyzed: 4
+modules_documented: 4
+current_layer: 2
+issues_count: 5
+packages:
+  - name: util
+    path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/util
+    status: docs_generated
+  - name: model
+    path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/model
+    status: docs_generated
+  - name: controller
+    path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/controller
+    status: docs_generated
+  - name: box
+    path: drawbox/src/commonMain/kotlin/io/github/markyav/drawbox/box
+    status: docs_generated
