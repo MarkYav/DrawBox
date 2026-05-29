@@ -1,70 +1,58 @@
 package io.github.markyav.drawbox.box
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntSize
-import io.github.markyav.drawbox.controller.OpenedImage
-import io.github.markyav.drawbox.model.PathWrapper
-import io.github.markyav.drawbox.util.createPath
-import kotlinx.coroutines.flow.StateFlow
+import io.github.markyav.drawbox.controller.DrawController
 
+// [SP_BOX_v2_01_02] Internal composable — owns size reporting, gesture wiring, and bitmap rendering.
 @Composable
-fun DrawBoxCanvas(
-    pathListWrapper: StateFlow<List<PathWrapper>>,
-    openedImage: StateFlow<OpenedImage>,
-    alpha: Float,
-    onSizeChanged: (IntSize) -> Unit,
-    onTap: (Offset) -> Unit,
-    onDragStart: (Offset) -> Unit,
-    onDrag: (Offset) -> Unit,
-    onDragEnd: () -> Unit,
-    modifier: Modifier,
+internal fun DrawBoxCanvas(
+    controller: DrawController,
+    modifier: Modifier = Modifier,
 ) {
-    val onDragMapper: (change: PointerInputChange, dragAmount: Offset) -> Unit = remember {
-        { change, _ -> onDrag(change.position) }
-    }
-    val path by pathListWrapper.collectAsState()
-    val image by openedImage.collectAsState()
+    val tick by controller.invalidationTick.collectAsState()
+    val bitmap = remember(tick) { controller.getDisplayOutput() } // [SP_BOX_v2_02_07]
 
-    Canvas(modifier = modifier
-        .onSizeChanged(onSizeChanged)
-        .pointerInput(Unit) { detectTapGestures(onTap = onTap) }
-        .pointerInput(Unit) { detectDragGestures(onDragStart = onDragStart, onDrag = onDragMapper, onDragEnd = onDragEnd, onDragCancel = onDragEnd) }
-        .clipToBounds()
-        .alpha(alpha)
+    Canvas(
+        modifier = modifier
+            .clipToBounds()  // [SP_BOX_v2_03_02] applied before gesture detectors
+            .onSizeChanged { controller.onCanvasSizeChanged(it) }
+            .pointerInput(Unit) {
+                // Single gesture scope resolves tap-vs-drag via slop check. [SP_BOX_v2_02_03–06]
+                awaitEachGesture {
+                    val down = awaitFirstDown()
+                    val drag = awaitTouchSlopOrCancellation(down.id) { change, _ -> change.consume() }
+                    if (drag == null) {
+                        // Slop not reached — treat as tap. [SP_BOX_v2_02_03]
+                        waitForUpOrCancellation()?.also { controller.onTap(down.position) }
+                    } else {
+                        // Slop reached — drag gesture. [SP_BOX_v2_02_04–06]
+                        controller.onGestureStart(down.position)
+                        drag.consume()
+                        try {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = event.changes.firstOrNull { it.id == drag.id } ?: break
+                                change.consume()
+                                if (!change.pressed) break
+                                controller.onGestureMove(change.previousPosition, change.position)
+                            }
+                        } finally {
+                            // Covers both normal end and system cancellation. [SP_BOX_v2_02_06]
+                            controller.onGestureEnd()
+                        }
+                    }
+                }
+            }
     ) {
-        (image as? OpenedImage.Image)?.let {
-            drawImage(
-                image = it.image,
-                srcOffset = it.srcOffset,
-                srcSize = it.srcSize,
-                dstSize = it.dstSize,
-            )
-        }
-
-        path.forEach { pw ->
-            drawPath(
-                createPath(pw.points),
-                color = pw.strokeColor,
-                alpha = pw.alpha,
-                style = Stroke(
-                    width = pw.strokeWidth,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round
-                )
-            )
-        }
+        drawImage(bitmap)
     }
 }

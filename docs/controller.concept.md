@@ -1,7 +1,8 @@
 ---
 ID: C_CTL
 Title: Draw Controller
-Status: active
+Status: deprecated
+Deprecated-reason: Replaced by [C_CTL_v2](draw_controller_v2.concept.md)
 Created: 2026-05-27
 Updated: 2026-05-27
 Depends on: [C_UTL, C_MDL]

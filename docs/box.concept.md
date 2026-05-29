@@ -1,7 +1,8 @@
 ---
 ID: C_BOX
 Title: DrawBox Composable Layer
-Status: active
+Status: deprecated
+Deprecated-reason: Replaced by [C_BOX_v2](draw_box_v2.concept.md)
 Created: 2026-05-27
 Updated: 2026-05-27
 Depends on: [C_CTL, C_MDL, C_UTL]
