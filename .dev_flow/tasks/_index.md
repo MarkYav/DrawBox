@@ -9,13 +9,14 @@
 
 | File | Summary | Status |
 |------|---------|--------|
-| `task_C_CTL_v2.md` | C_CTL_v2 Draw Controller v2 — implemented, fix applied (box package), pending commit | in-progress |
-| `task_C_BOX_v2.md` | C_BOX_v2 DrawBox Composable v2 — concept written, awaiting user review | in-progress |
+| `task_20260529_readme-v2.md` | README rewrite for v2 API — review passed, awaiting commit approval | in-progress |
 
 ## Recently Completed
 
 | File | Summary | Completed |
 |------|---------|-----------|
+| `task_20260529_sample-v2-migration.md` | Sample apps (android + desktop) migrated to v2 API | 2026-05-29 |
+| `task_20260529_v1-stub-cleanup.md` | Deleted 5 v1 stub files from box/ and controller/ packages | 2026-05-29 |
+| `task_C_CTL_v2.md` | C_CTL_v2 Draw Controller v2 — implemented and committed | 2026-05-29 |
+| `task_C_BOX_v2.md` | C_BOX_v2 DrawBox Composable v2 — implemented and committed | 2026-05-29 |
 | `task_C_ENG.md` | C_ENG Draw Engine — all 18 source files implemented and committed | 2026-05-27 |
-| `task_20260527_v2-spike.md` | v2 architecture spike — all design decisions concluded, ready for concept phase | 2026-05-27 |
-| `task_20260527_onboard.md` | Full onboard — 4 modules documented, rules extracted, skills initialized | 2026-05-27 |
