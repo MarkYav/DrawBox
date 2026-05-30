@@ -3,8 +3,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -28,10 +28,10 @@ fun main() = application {
         Column {
             Row {
                 IconButton(onClick = controller::undo, enabled = canUndo) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "undo")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "undo")
                 }
                 IconButton(onClick = controller::redo, enabled = canRedo) {
-                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "redo")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "redo")
                 }
                 IconButton(onClick = controller::reset, enabled = canUndo || canRedo) {
                     Icon(imageVector = Icons.Default.Clear, contentDescription = "reset")

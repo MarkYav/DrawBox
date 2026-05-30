@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,7 +22,7 @@ internal fun ExpandedDrawingScreen(
     val canUndo by drawController.canUndo.collectAsState()
     val canRedo by drawController.canRedo.collectAsState()
 
-    Column(modifier = Modifier.weight(4.5f, false)) {
+    Column {
         DrawBox(
             controller = drawController,
             modifier = Modifier
@@ -33,10 +33,10 @@ internal fun ExpandedDrawingScreen(
         )
         Row {
             IconButton(onClick = drawController::undo, enabled = canUndo) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "undo")
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "undo")
             }
             IconButton(onClick = drawController::redo, enabled = canRedo) {
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "redo")
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "redo")
             }
             IconButton(onClick = drawController::reset, enabled = canUndo || canRedo) {
                 Icon(imageVector = Icons.Default.Clear, contentDescription = "reset")

@@ -4,7 +4,7 @@ android-targetSdk="36"
 android-compileSdk="36"
 android-minSdk="24"
 
-agp = "9.0.0"
+agp = "9.0.1"
 kotlin = "2.3.21"
 compose = "1.11.0"
 maven-publish = "0.34.0"
@@ -13,6 +13,7 @@ buildConfig = "5.6.5"
 androidx-appcompat = "1.7.1"
 androidx-activityCompose = "1.13.0"
 androidx-coreKtx = "1.18.0"
+materialIcons="1.7.3"
 
 [libraries]
 
@@ -23,6 +24,8 @@ androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
+androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIcons" }
+material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 
 [plugins]
 

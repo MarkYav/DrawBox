@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":drawbox"))
     implementation(libs.androidx.activityCompose)
     implementation(libs.compose.material)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.coreKtx)
 }

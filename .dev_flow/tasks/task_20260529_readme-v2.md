@@ -3,7 +3,7 @@
 **Task ID:** task_20260529_readme-v2
 **Created:** 2026-05-29
 **Last updated:** 2026-05-29
-**Status:** in-progress
+**Status:** done
 **Contributors:** claude-sonnet-4-6
 
 ## Current Work Item
@@ -26,7 +26,7 @@
 
 ### Subtask: Rewrite README
 **Author:** claude-sonnet-4-6
-**Status:** in-progress
+**Status:** done
 **Goal:** Update README.md to accurately document the v2 public API
 
 **Progress:**

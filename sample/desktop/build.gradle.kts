@@ -23,4 +23,5 @@ compose.desktop {
 dependencies {
     implementation(project(":drawbox"))
     implementation(compose.desktop.currentOs)
+    implementation(libs.material.icons.extended)
 }

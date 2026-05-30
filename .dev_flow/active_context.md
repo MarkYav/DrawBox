@@ -6,12 +6,12 @@ Last updated: 2026-05-27
 
 | Task ID | Document | Phase | Status | Contributors | Updated |
 |---------|----------|-------|--------|--------------|---------|
-| task_20260529_readme-v2 | README.md | Implement → Review | in-progress | claude-sonnet-4-6 | 2026-05-29 |
 
 ## Recently Completed (last 5)
 
 | Task ID | Document | Phase | Completed |
 |---------|----------|-------|-----------|
+| task_20260529_readme-v2 | README.md | Implement → Commit | 2026-05-29 |
 | task_20260529_sample-v2-migration | sample/android + sample/desktop | Implement → Commit | 2026-05-29 |
 | task_20260529_v1-stub-cleanup | box/ + controller/ stubs | Implement → Commit | 2026-05-29 |
 | task_C_CTL_v2 | controller/DrawController.kt | Implement → Commit | 2026-05-29 |
