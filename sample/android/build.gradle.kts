@@ -1,11 +1,19 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.compose)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 group = Library.group
 version = Library.version
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
+    }
+}
 
 android {
     namespace = "io.github.markyav.drawbox.android"
@@ -18,23 +26,26 @@ android {
         versionName = "1.0"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
         }
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
     implementation(project(":drawbox"))
-    implementation(libs.androidx.activityCompose)
+    implementation(libs.androidx.activity.compose)
     implementation(compose.material)
+    implementation(libs.material.icons.core)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.coreKtx)
+    implementation(libs.androidx.core.ktx)
 }

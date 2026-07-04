@@ -1,27 +1,37 @@
 [versions]
 
-android-targetSdk="34"
-android-compileSdk="34"
+android-targetSdk="37"
+android-compileSdk="37"
 android-minSdk="24"
 
-agp = "8.1.4"
-kotlin = "1.9.20"
-compose = "1.5.10"
+agp = "9.2.1"
+kotlin = "2.4.0"
+composeMultiplatform = "1.11.1"
 
-androidx-appcompat = "1.6.1"
-androidx-activityCompose = "1.8.0"
-androidx-coreKtx = "1.12.0"
+androidx-appcompat = "1.7.1"
+androidx-activity = "1.13.0"
+androidx-core = "1.19.0"
+
+icons = "1.7.8"
 
 [libraries]
 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+
+material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "icons" }
 
 [plugins]
 
-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# Multiplatform
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# Android
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+
+# JVM
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
