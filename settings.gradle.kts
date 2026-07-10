@@ -12,10 +12,6 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
-
 dependencyResolutionManagement {
     repositories {
         google {
@@ -29,7 +25,12 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "DrawBox"
 
 include(":drawbox")
+include(":drawbox-serialization")
 include(":sample:android", ":sample:desktop", ":sample:web")
