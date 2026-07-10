@@ -11,7 +11,7 @@ version = Library.version
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "io.github.markyav.drawbox.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = Library.name
@@ -23,4 +23,6 @@ compose.desktop {
 dependencies {
     implementation(project(":drawbox"))
     implementation(compose.desktop.currentOs)
+    implementation(libs.kotlinx.coroutinesSwing)
+    implementation(libs.material.icons.core)
 }

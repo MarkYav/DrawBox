@@ -15,14 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.markyav.drawbox.box.DrawBox
-import io.github.markyav.drawbox.controller.DrawBoxSubscription
 import io.github.markyav.drawbox.controller.DrawController
+import io.github.markyav.drawbox.model.ImageMode
 
 @Composable
 internal fun ExpandedDrawingScreen(
     drawController: DrawController,
 ) {
-    val bitmap by remember { drawController.getBitmap(500, DrawBoxSubscription.FinishDrawingUpdate) }.collectAsState()
+    val bitmap by drawController.image(ImageMode.Committed).collectAsState()
 
     Column {
         Image(bitmap = bitmap, modifier = Modifier
@@ -40,26 +40,18 @@ internal fun ExpandedDrawingScreen(
                     .weight(1f, fill = false),
             )
             Row {
-                val enableUndo by remember { derivedStateOf { drawController.undoCount.value > 0 } }
-                val enableRedo by remember { derivedStateOf { drawController.redoCount.value > 0 } }
+                val enableUndo by drawController.canUndo.collectAsState()
+                val enableRedo by drawController.canRedo.collectAsState()
                 IconButton(onClick = drawController::undo, enabled = enableUndo) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "undo")
                 }
                 IconButton(onClick = drawController::redo, enabled = enableRedo) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "redo")
                 }
-                IconButton(onClick = drawController::reset, enabled = enableUndo || enableRedo) {
-                    Icon(imageVector = Icons.Default.Clear, contentDescription = "reset")
+                IconButton(onClick = drawController::clear, enabled = enableUndo || enableRedo) {
+                    Icon(imageVector = Icons.Default.Clear, contentDescription = "clear")
                 }
             }
         }
     }
-}
-
-/*@AndroidPreviewDevices
-@Composable
-fun ExpandedDrawingScreenPreview() {
-    MobiSketchTheme {
-        ExpandedDrawingScreen()
-    }
-}*/
+}

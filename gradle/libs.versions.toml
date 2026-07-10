@@ -12,7 +12,9 @@ androidx-appcompat = "1.7.1"
 androidx-activity = "1.13.0"
 androidx-core = "1.19.0"
 
-icons = "1.7.8"
+icons = "1.7.3"
+
+kotlinx-coroutines = "1.11.0"
 
 [libraries]
 
@@ -20,7 +22,11 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "a
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 
-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "icons" }
+material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "icons" }
+
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+
+kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
 [plugins]
 
