@@ -14,3 +14,16 @@ data class BrushAction(
     val strokeWidth: Float,
     val points: List<NormPoint>
 ) : Action
+
+@OptIn(ExperimentalUuidApi::class)
+data class EraserAction(
+    override val id: String = Uuid.random().toString(),
+    val strokeWidth: Float,
+    val points: List<NormPoint>
+) : Action
+
+@OptIn(ExperimentalUuidApi::class)
+data class RemoveAction(
+    override val id: String = Uuid.random().toString(),
+    val removedActionIds: List<String>
+) : Action

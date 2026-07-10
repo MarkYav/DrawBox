@@ -4,14 +4,17 @@ import io.github.markyav.drawbox.model.Action
 import io.github.markyav.drawbox.model.BrushAction
 import io.github.markyav.drawbox.model.DrawSettings
 import io.github.markyav.drawbox.model.DrawTool
+import io.github.markyav.drawbox.model.EraserAction
+import io.github.markyav.drawbox.model.RemoveAction
 import io.github.markyav.drawbox.model.NormPoint
 
 internal class GestureController(
     private val documentManager: DocumentManager,
     private val imageManager: ImageManager,
     private val getSettings: () -> DrawSettings,
-    private val onLiveUpdate: () -> Unit,
-    private val onCommitted: () -> Unit
+    private val onLiveUpdate: (Action?) -> Unit,
+    private val onCommitted: () -> Unit,
+    private val onNeedsFullRedraw: () -> Unit
 ) {
     private var ongoingAction: Action? = null
     private var isGestureLocked = false
@@ -20,18 +23,41 @@ internal class GestureController(
         if (isGestureLocked) return
         
         val settings = getSettings()
-        if (settings.tool == DrawTool.Brush) {
-            val action = BrushAction(
-                color = settings.color,
-                strokeWidth = settings.strokeWidth,
-                points = listOf(point)
-            )
-            documentManager.commitAction(action)
-            imageManager.current?.let {
-                RenderEngine.renderAction(action, it)
+        when (settings.tool) {
+            DrawTool.Brush -> {
+                val action = BrushAction(
+                    color = settings.color,
+                    strokeWidth = settings.strokeWidth,
+                    points = listOf(point)
+                )
+                commitAndDraw(action)
             }
-            onCommitted()
+            DrawTool.Eraser -> {
+                val action = EraserAction(
+                    strokeWidth = settings.strokeWidth,
+                    points = listOf(point)
+                )
+                commitAndDraw(action)
+            }
+            DrawTool.ActionEraser -> {
+                val hits = findHitActions(point, emptyList())
+                if (hits.isNotEmpty()) {
+                    val action = RemoveAction(removedActionIds = hits)
+                    documentManager.commitAction(action)
+                    onNeedsFullRedraw()
+                    onCommitted()
+                }
+            }
+            else -> return
         }
+    }
+
+    private fun commitAndDraw(action: Action) {
+        documentManager.commitAction(action)
+        imageManager.current?.let {
+            RenderEngine.renderAction(action, it)
+        }
+        onCommitted()
     }
 
     fun onDragStart(point: NormPoint) {
@@ -45,14 +71,21 @@ internal class GestureController(
                 strokeWidth = settings.strokeWidth,
                 points = listOf(point)
             )
-            else -> return // M2 tools deferred
+            DrawTool.Eraser -> EraserAction(
+                strokeWidth = settings.strokeWidth,
+                points = listOf(point)
+            )
+            DrawTool.ActionEraser -> RemoveAction(
+                removedActionIds = findHitActions(point, emptyList())
+            )
+            else -> return // M2 fill deferred
         }
 
         imageManager.clearActive()
         imageManager.active?.let { 
             RenderEngine.renderAction(ongoingAction!!, it) 
         }
-        onLiveUpdate()
+        onLiveUpdate(ongoingAction)
     }
 
     fun onDrag(point: NormPoint) {
@@ -65,7 +98,17 @@ internal class GestureController(
             imageManager.active?.let { 
                 RenderEngine.renderAction(ongoingAction!!, it) 
             }
-            onLiveUpdate()
+            onLiveUpdate(ongoingAction)
+        } else if (action is EraserAction) {
+            ongoingAction = action.copy(points = action.points + point)
+            onLiveUpdate(ongoingAction)
+        } else if (action is RemoveAction) {
+            val newHits = findHitActions(point, action.removedActionIds)
+            if (newHits.isNotEmpty()) {
+                ongoingAction = action.copy(removedActionIds = action.removedActionIds + newHits)
+                // We do not render RemoveAction incrementally. 
+                // A more advanced implementation might redraw the live image here.
+            }
         }
     }
 
@@ -77,9 +120,13 @@ internal class GestureController(
             // Commit to history
             documentManager.commitAction(action)
             
-            // Draw to current image
-            imageManager.current?.let {
-                RenderEngine.renderAction(action, it)
+            if (action is RemoveAction) {
+                onNeedsFullRedraw()
+            } else {
+                // Draw to current image incrementally
+                imageManager.current?.let {
+                    RenderEngine.renderAction(action, it)
+                }
             }
             
             // Clear active
@@ -90,5 +137,32 @@ internal class GestureController(
         }
         
         isGestureLocked = false
+    }
+
+    private fun findHitActions(point: NormPoint, alreadyRemoved: List<String>): List<String> {
+        val history = documentManager.history.value.actions
+        val globallyRemoved = history.filterIsInstance<RemoveAction>().flatMap { it.removedActionIds }.toSet()
+        val hitIds = mutableListOf<String>()
+        val width = imageManager.current?.width?.toFloat() ?: 1000f
+        val height = imageManager.current?.height?.toFloat() ?: 1000f
+        
+        for (action in history) {
+            if (action.id in globallyRemoved || action.id in alreadyRemoved) continue
+            when (action) {
+                is BrushAction -> {
+                    val threshold = (action.strokeWidth / 2f) + (width * 0.02f)
+                    if (action.points.any { p -> distPixels(p, point, width, height) < threshold }) {
+                        hitIds.add(action.id)
+                    }
+                }
+            }
+        }
+        return hitIds
+    }
+    
+    private fun distPixels(p1: NormPoint, p2: NormPoint, w: Float, h: Float): Float {
+        val dx = (p1.x - p2.x) * w
+        val dy = (p1.y - p2.y) * h
+        return kotlin.math.sqrt(dx * dx + dy * dy)
     }
 }

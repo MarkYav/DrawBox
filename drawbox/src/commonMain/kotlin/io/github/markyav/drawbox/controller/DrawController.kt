@@ -52,11 +52,17 @@ class DrawController(
         documentManager = documentManager,
         imageManager = imageManager,
         getSettings = { _settings.value },
-        onLiveUpdate = {
+        onLiveUpdate = { ongoingAction ->
             val merged = ImageBitmap(canvasSize.width, canvasSize.height)
             val canvas = Canvas(merged)
             imageManager.current?.let { canvas.drawImage(it, Offset.Zero, Paint()) }
-            imageManager.active?.let { canvas.drawImage(it, Offset.Zero, Paint()) }
+            
+            if (ongoingAction is io.github.markyav.drawbox.model.EraserAction) {
+                RenderEngine.renderAction(ongoingAction, merged)
+            } else {
+                imageManager.active?.let { canvas.drawImage(it, Offset.Zero, Paint()) }
+            }
+            
             _liveImage.value = merged
         },
         onCommitted = {
@@ -65,6 +71,9 @@ class DrawController(
             imageManager.current?.let { canvas.drawImage(it, Offset.Zero, Paint()) }
             _committedImage.value = newBitmap
             _liveImage.value = newBitmap
+        },
+        onNeedsFullRedraw = {
+            reDrawHistory()
         }
     )
 
@@ -141,8 +150,10 @@ class DrawController(
             "Export size must have the same aspect ratio as canvasSize" 
         }
 
+        val scale = size.width.toFloat() / canvasSize.width.toFloat()
+
         val bitmap = ImageBitmap(size.width, size.height)
-        RenderEngine.render(documentManager.history.value, bitmap)
+        RenderEngine.render(documentManager.history.value, bitmap, scale)
         return bitmap
     }
 }

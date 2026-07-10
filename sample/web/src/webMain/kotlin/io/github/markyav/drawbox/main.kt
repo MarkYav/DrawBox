@@ -68,6 +68,23 @@ fun main() {
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.padding(end = 8.dp)) {
+                    Column(modifier = Modifier.weight(1f, true)) {
+                        Text("Tool")
+                        Row {
+                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.Brush) }) {
+                                Text("Brush")
+                            }
+                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.Eraser) }) {
+                                Text("Eraser")
+                            }
+                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.ActionEraser) }) {
+                                Text("ActionEraser")
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(modifier = Modifier.padding(end = 8.dp)) {
                     Column(modifier = Modifier.weight(2f, true)) {
                         Text("Color")
                         Row {

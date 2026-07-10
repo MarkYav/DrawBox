@@ -11,6 +11,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,17 @@ internal fun ExpandedDrawingScreen(
                 }
                 IconButton(onClick = drawController::clear, enabled = enableUndo || enableRedo) {
                     Icon(imageVector = Icons.Default.Clear, contentDescription = "clear")
+                }
+            }
+            Row {
+                TextButton(onClick = { drawController.setTool(io.github.markyav.drawbox.model.DrawTool.Brush) }) {
+                    Text("Brush")
+                }
+                TextButton(onClick = { drawController.setTool(io.github.markyav.drawbox.model.DrawTool.Eraser) }) {
+                    Text("Eraser")
+                }
+                TextButton(onClick = { drawController.setTool(io.github.markyav.drawbox.model.DrawTool.ActionEraser) }) {
+                    Text("ActionEraser")
                 }
             }
         }
