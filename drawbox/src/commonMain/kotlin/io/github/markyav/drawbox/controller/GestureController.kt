@@ -8,6 +8,7 @@ import io.github.markyav.drawbox.model.EraserAction
 import io.github.markyav.drawbox.model.FillAction
 import io.github.markyav.drawbox.model.RemoveAction
 import io.github.markyav.drawbox.model.NormPoint
+import io.github.markyav.drawbox.util.StrokeProcessor
 
 internal class GestureController(
     private val documentManager: DocumentManager,
@@ -136,8 +137,18 @@ internal class GestureController(
     fun onDragEnd() {
         if (!isGestureLocked) return
         
-        val action = ongoingAction
+        var action = ongoingAction
         if (action != null) {
+            val width = imageManager.current?.width?.toFloat() ?: 1000f
+            val height = imageManager.current?.height?.toFloat() ?: 1000f
+
+            // Apply StrokeProcessor for Brush and Eraser actions
+            if (action is BrushAction) {
+                action = action.copy(points = StrokeProcessor.process(action.points, width, height))
+            } else if (action is EraserAction) {
+                action = action.copy(points = StrokeProcessor.process(action.points, width, height))
+            }
+
             // Commit to history
             documentManager.commitAction(action)
             
