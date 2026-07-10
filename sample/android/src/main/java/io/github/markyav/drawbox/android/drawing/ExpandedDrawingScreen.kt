@@ -64,6 +64,9 @@ internal fun ExpandedDrawingScreen(
                 TextButton(onClick = { drawController.setTool(io.github.markyav.drawbox.model.DrawTool.ActionEraser) }) {
                     Text("ActionEraser")
                 }
+                TextButton(onClick = { drawController.setTool(io.github.markyav.drawbox.model.DrawTool.ColorFill) }) {
+                    Text("Fill")
+                }
             }
         }
     }

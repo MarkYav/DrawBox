@@ -27,3 +27,14 @@ data class RemoveAction(
     override val id: String = Uuid.random().toString(),
     val removedActionIds: List<String>
 ) : Action
+
+@OptIn(ExperimentalUuidApi::class)
+data class FillAction(
+    override val id: String = Uuid.random().toString(),
+    val color: Long,
+    val tolerance: Float,
+    val point: NormPoint,
+    val spans: List<FillSpan> = emptyList()
+) : Action
+
+data class FillSpan(val lx: Int, val rx: Int, val y: Int)

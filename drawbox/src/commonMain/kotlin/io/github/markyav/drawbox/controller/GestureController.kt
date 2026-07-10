@@ -5,6 +5,7 @@ import io.github.markyav.drawbox.model.BrushAction
 import io.github.markyav.drawbox.model.DrawSettings
 import io.github.markyav.drawbox.model.DrawTool
 import io.github.markyav.drawbox.model.EraserAction
+import io.github.markyav.drawbox.model.FillAction
 import io.github.markyav.drawbox.model.RemoveAction
 import io.github.markyav.drawbox.model.NormPoint
 
@@ -48,7 +49,24 @@ internal class GestureController(
                     onCommitted()
                 }
             }
-            else -> return
+            DrawTool.ColorFill -> {
+                val spans = imageManager.current?.let { bitmap ->
+                    RenderEngine.calculateFillSpans(
+                        target = bitmap,
+                        startXNorm = point.x,
+                        startYNorm = point.y,
+                        tolerance = settings.fillTolerance,
+                        fillColorInt = settings.color.toInt()
+                    )
+                } ?: emptyList()
+                val action = FillAction(
+                    color = settings.color,
+                    tolerance = settings.fillTolerance,
+                    point = point,
+                    spans = spans
+                )
+                commitAndDraw(action)
+            }
         }
     }
 
@@ -78,7 +96,10 @@ internal class GestureController(
             DrawTool.ActionEraser -> RemoveAction(
                 removedActionIds = findHitActions(point, emptyList())
             )
-            else -> return // M2 fill deferred
+            else -> {
+                isGestureLocked = false
+                return
+            }
         }
 
         imageManager.clearActive()
@@ -152,6 +173,18 @@ internal class GestureController(
                 is BrushAction -> {
                     val threshold = (action.strokeWidth / 2f) + (width * 0.02f)
                     if (action.points.any { p -> distPixels(p, point, width, height) < threshold }) {
+                        hitIds.add(action.id)
+                    }
+                }
+                is FillAction -> {
+                    val ex = (point.x * width).toInt()
+                    val ey = (point.y * height).toInt()
+                    val radius = (width * 0.02f).toInt()
+                    if (action.spans.any { span -> 
+                        val insideY = ey in (span.y - radius)..(span.y + radius)
+                        val insideX = ex in (span.lx - radius)..(span.rx + radius)
+                        insideX && insideY
+                    }) {
                         hitIds.add(action.id)
                     }
                 }

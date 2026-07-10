@@ -79,6 +79,9 @@ fun main() = application {
                             TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.ActionEraser) }) {
                                 Text("ActionEraser")
                             }
+                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.ColorFill) }) {
+                                Text("Fill")
+                            }
                         }
                     }
                 }
