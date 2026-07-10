@@ -21,6 +21,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":drawbox"))
+            implementation(project(":drawbox-ui"))
 
             implementation(libs.compose.ui)
 //            implementation(libs.material.icons.core)

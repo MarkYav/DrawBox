@@ -33,4 +33,5 @@ rootProject.name = "DrawBox"
 
 include(":drawbox")
 include(":drawbox-serialization")
+include(":drawbox-ui")
 include(":sample:android", ":sample:desktop", ":sample:web")

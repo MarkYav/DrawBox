@@ -2,17 +2,32 @@ package io.github.markyav.drawbox
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Slider
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -20,6 +35,7 @@ import androidx.compose.ui.window.application
 import io.github.markyav.drawbox.box.DrawBox
 import io.github.markyav.drawbox.controller.DrawController
 import io.github.markyav.drawbox.model.ImageMode
+import io.github.markyav.drawbox.ui.DrawBoxControls
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
@@ -48,14 +64,10 @@ fun main() = application {
                     }
                 }
                 Row(modifier = Modifier.padding(end = 8.dp)) {
-                    Column(modifier = Modifier.weight(2f, false)) {
-                        Text("Stroke width")
-                        Slider(
-                            value = settings.strokeWidth,
-                            onValueChange = { controller.setStrokeWidth(it) },
-                            valueRange = 1f..100f
-                        )
-                    }
+                    DrawBoxControls(
+                        controller,
+                        modifier = Modifier.weight(2f, false)
+                    )
                     Column(modifier = Modifier.weight(2f, false)) {
                         Text("Canvas opacity")
                         Slider(
@@ -63,45 +75,7 @@ fun main() = application {
                             onValueChange = { canvasOpacity = it },
                             valueRange = 0f..1f
                         )
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(modifier = Modifier.padding(end = 8.dp)) {
-                    Column(modifier = Modifier.weight(1f, true)) {
-                        Text("Tool")
-                        Row {
-                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.Brush) }) {
-                                Text("Brush")
-                            }
-                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.Eraser) }) {
-                                Text("Eraser")
-                            }
-                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.ActionEraser) }) {
-                                Text("ActionEraser")
-                            }
-                            TextButton(onClick = { controller.setTool(io.github.markyav.drawbox.model.DrawTool.ColorFill) }) {
-                                Text("Fill")
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(modifier = Modifier.padding(end = 8.dp)) {
-                    Column(modifier = Modifier.weight(2f, true)) {
-                        Text("Color")
-                        Row {
-                            TextButton(onClick = { controller.setColor(Color.Red.toArgb().toLong()) }) {
-                                Text("Red")
-                            }
-                            TextButton(onClick = { controller.setColor(Color.Green.toArgb().toLong()) }) {
-                                Text("Green")
-                            }
-                            TextButton(onClick = { controller.setColor(Color.Yellow.toArgb().toLong()) }) {
-                                Text("Yellow")
-                            }
-                        }
-                    }
-                    Column(modifier = Modifier.weight(2f, false)) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text("Background opacity")
                         Slider(
                             value = backgroundAlpha,

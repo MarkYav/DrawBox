@@ -22,6 +22,7 @@ compose.desktop {
 
 dependencies {
     implementation(project(":drawbox"))
+    implementation(project(":drawbox-ui"))
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.material.icons.core)

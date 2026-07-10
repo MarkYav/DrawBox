@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation(project(":drawbox"))
+    implementation(project(":drawbox-ui"))
     implementation(libs.androidx.activity.compose)
     implementation(compose.material)
     implementation(libs.material.icons.core)
